@@ -57,7 +57,7 @@ class TPC:
 
     def coleção_de_luz(self, Particula, delta, ax, **kwargs):
         """Essa função plota a coleção de fótons em uma parede da TPC na forma de um scatter."""
-        x_plano, y_plano, z_plano = 0, 0, 0
+        x_plano, y_plano, z_plano = np.e, np.e, np.e
         for chave, valor in kwargs.items():
             if chave == 'x':
                 x_plano = valor
@@ -94,76 +94,82 @@ class TPC:
             intersecção_plano_z_geral += intersecção_plano_z
         for chave, valor in kwargs.items():
             if chave == 'tipo' and valor == 'Scatter':
-                if x_plano == 0 and y_plano == 0:
+                if x_plano == np.e and y_plano == np.e:
                     ax.scatter(intersecção_plano_x_geral, intersecção_plano_y_geral, s=0.1)
-                elif x_plano == 0 and z_plano == 0:
+                elif x_plano == np.e  and z_plano == np.e:
                     ax.scatter(intersecção_plano_x_geral, intersecção_plano_z_geral, s=0.1)
-                elif y_plano == 0 and z_plano == 0:
+                elif y_plano == np.e and z_plano == np.e:
                     ax.scatter(intersecção_plano_y_geral, intersecção_plano_z_geral, s=0.1)
             elif chave == 'tipo' and valor == 'Hist':
-                if x_plano == 0 and y_plano == 0:
+                if x_plano == np.e and y_plano == np.e:
                     ax.hist2d(intersecção_plano_x_geral, intersecção_plano_y_geral, bins=100)
-                elif x_plano == 0 and z_plano == 0:
+                elif x_plano == np.e and z_plano == np.e:
                     ax.hist2d(intersecção_plano_x_geral, intersecção_plano_z_geral, bins=100)
-                elif y_plano == 0 and z_plano == 0:
+                elif y_plano == np.e and z_plano == np.e:
                     ax.hist2d(intersecção_plano_y_geral, intersecção_plano_z_geral, bins=100)
+
 
 def encontrar_limite(teta, fi, x_emissão, y_emissão, z_emissão, TPC):
     """"Essa função resolve aquele problema da parametrização da trajetória.
     Em qual t o Muon intercepta alguma parede?"""
-    limites = [(TPC.comprimento_x - x_emissão) / (np.sin(teta) * np.cos(fi)),
-               (TPC.comprimento_y - y_emissão) / (np.sin(teta) * np.sin(fi)),
-               (TPC.comprimento_z - z_emissão) / (np.cos(teta)),
-               (- x_emissão) / (np.sin(teta) * np.cos(fi)),
-               (- y_emissão) / (np.sin(teta) * np.sin(fi)),
-               (- z_emissão) / (np.cos(teta))]
-    pontos_limites = [[limites[0] * np.sin(teta) * np.cos(fi) + x_emissão,
-                       limites[0] * np.sin(teta) * np.sin(fi) + y_emissão,
-                       limites[0] * np.cos(teta) + z_emissão],
-                      [limites[1] * np.sin(teta) * np.cos(fi) + x_emissão,
-                       limites[1] * np.sin(teta) * np.sin(fi) + y_emissão,
-                       limites[1] * np.cos(teta) + z_emissão],
-                      [limites[2] * np.sin(teta) * np.cos(fi) + x_emissão,
-                       limites[2] * np.sin(teta) * np.sin(fi) + y_emissão,
-                       limites[2] * np.cos(teta) + z_emissão],
-                      [limites[3] * np.sin(teta) * np.cos(fi) + x_emissão,
-                       limites[3] * np.sin(teta) * np.sin(fi) + y_emissão,
-                       limites[3] * np.cos(teta) + z_emissão],
-                      [limites[4] * np.sin(teta) * np.cos(fi) + x_emissão,
-                       limites[4] * np.sin(teta) * np.sin(fi) + y_emissão,
-                       limites[4] * np.cos(teta) + z_emissão],
-                      [limites[5] * np.sin(teta) * np.cos(fi) + x_emissão,
-                       limites[5] * np.sin(teta) * np.sin(fi) + y_emissão,
-                       limites[5] * np.cos(teta) + z_emissão]]
-    lista = []
-    for i in range(6):
-        if i in [0, 3] and 0 <= pontos_limites[i][1] <= TPC.comprimento_y \
-                and 0 <= pontos_limites[i][2] <= TPC.comprimento_z:
-            lista += [i]
-        elif i in [1, 4] and 0 <= pontos_limites[i][0] <= TPC.comprimento_x \
-                and 0 <= pontos_limites[i][2] <= TPC.comprimento_z:
-            lista += [i]
-        elif i in [2, 5] and 0 <= pontos_limites[i][0] <= TPC.comprimento_x \
-                and 0 <= pontos_limites[i][1] <= TPC.comprimento_y:
-            lista += [i]
-    vetor_diretor = [np.sin(teta) * np.cos(fi),
-                     np.sin(teta) * np.sin(fi),
-                     np.cos(teta)]
-    vetor_diretor_norm = vetor_diretor / np.linalg.norm(vetor_diretor)
-    try:
-        direções_possíveis = [[limites[lista[0]] * np.sin(teta) * np.cos(fi),
-                               limites[lista[0]] * np.sin(teta) * np.sin(fi),
-                               limites[lista[0]] * np.cos(teta)],
-                              [limites[lista[1]] * np.sin(teta) * np.cos(fi),
-                               limites[lista[1]] * np.sin(teta) * np.sin(fi),
-                               limites[lista[1]] * np.cos(teta)]]
-        if np.inner(vetor_diretor_norm, direções_possíveis[0]) > 0:
-            t = limites[lista[0]]
-        else:
-            t = limites[lista[1]]
-        return abs(t)
-    except:
+    limites_x_y_z = [(TPC.comprimento_x - x_emissão) / (np.sin(teta) * np.cos(fi)),
+                     (TPC.comprimento_y - y_emissão) / (np.sin(teta) * np.sin(fi)),
+                     (TPC.comprimento_z - z_emissão) / (np.cos(teta)),
+                     (- x_emissão) / (np.sin(teta) * np.cos(fi)),
+                     (- y_emissão) / (np.sin(teta) * np.sin(fi)),
+                     (- z_emissão) / (np.cos(teta))]
+    fis = [np.arctan((TPC.comprimento_y - y_emissão)/(TPC.comprimento_x - x_emissão)),
+           np.pi - np.arctan((TPC.comprimento_y - y_emissão)/ (x_emissão)),
+           np.pi + np.arctan((y_emissão)/(x_emissão)),
+           2*np.pi - np.arctan((y_emissão)/(TPC.comprimento_x - x_emissão))]
+    limites_escolhidos = []
+    if teta < np.pi/2:
+        #Partícula para "cima"
+        if fi < fis[0] or fi >= fis[3]:
+            #Partícula cruza x_tpc
+            limites_escolhidos = [limites_x_y_z[2],limites_x_y_z[0]]
+        elif fis[0] <= fi < fis[1]:
+            #Partícula cruza y_tpc
+            limites_escolhidos = [limites_x_y_z[2],limites_x_y_z[1]]
+        elif fis[1] <= fi < fis[2]:
+            #Partícula cruza x_zero
+            limites_escolhidos = [limites_x_y_z[2],limites_x_y_z[3]]
+        elif fis[2] <= fi < fis[3]:
+            #Partícula cruza y_zero
+            limites_escolhidos = [limites_x_y_z[2],limites_x_y_z[4]]
+    elif teta > np.pi/2:
+        #Partícula para "baixo"
+        if fi < fis[0] or fi >= fis[3]:
+            #Partícula cruza x_tpc
+            limites_escolhidos = [limites_x_y_z[5],limites_x_y_z[0]]
+        elif fis[0] <= fi < fis[1]:
+            #Partícula cruza y_tpc
+            limites_escolhidos = [limites_x_y_z[5],limites_x_y_z[1]]
+        elif fis[1] <= fi < fis[2]:
+            #Partícula cruza x_zero
+            limites_escolhidos = [limites_x_y_z[5],limites_x_y_z[3]]
+        elif fis[2] <= fi < fis[3]:
+            #Partícula cruza y_zero
+            limites_escolhidos = [limites_x_y_z[5],limites_x_y_z[4]]
+    else:
+        #Partícula paralela à z
+        if fi < fis[0] or fi >= fis[3]:
+            #Partícula cruza x_tpc
+            limites_escolhidos = [limites_x_y_z[0]]
+        elif fis[0] <= fi < fis[1]:
+            #Partícula cruza y_tpc
+            limites_escolhidos = [limites_x_y_z[1]]
+        elif fis[1] <= fi < fis[2]:
+            #Partícula cruza x_zero
+            limites_escolhidos = [limites_x_y_z[3]]
+        elif fis[2] <= fi < fis[3]:
+            #Partícula cruza y_zero
+            limites_escolhidos = [limites_x_y_z[4]]
+    limites_escolhidos.sort()
+    if limites_escolhidos[0] > 10**10:
         return 0
+    else:
+        return limites_escolhidos[0]
 
 
 def intersecção_foton_limites(ponto, quantidade, TPC):
@@ -171,11 +177,21 @@ def intersecção_foton_limites(ponto, quantidade, TPC):
     e a quantidade de fótons saindo desse ponto."""
     intersecção_limites = []
     for i in range(int(quantidade)):
-        teta_fi = np.random.uniform([0,0],[np.pi,np.pi*2],size=2)
-        t = encontrar_limite(teta_fi[0], teta_fi[1], ponto[0],ponto[1],ponto[2], TPC)
-        intersecção_limites += [[(t*np.sin(teta_fi[0])*np.cos(teta_fi[1])) + ponto[0],
-                                 (t*np.sin(teta_fi[0])*np.sin(teta_fi[1])) + ponto[1],
-                                 (t*np.cos(teta_fi[0])) + ponto[2]]]
+        x_limite, y_limite, z_limite = 0, 0, 0
+        teta = np.random.random()*np.pi
+        fi = np.random.random()*2*np.pi
+        t = encontrar_limite(teta, fi, ponto[0], ponto[1], ponto[2], TPC)
+        x_limite = (t*np.sin(teta)*np.cos(fi)) + ponto[0]
+        y_limite = (t*np.sin(teta)*np.sin(fi)) + ponto[1]
+        z_limite = (t*np.cos(teta)) + ponto[2]
+        if abs(x_limite) < 10**(-10):
+            intersecção_limites += [[0, y_limite, z_limite]]
+        elif abs(y_limite) < 10**(-10):
+            intersecção_limites += [[x_limite, 0, z_limite]]
+        elif abs(z_limite) < 10**(-10):
+            intersecção_limites += [[x_limite, y_limite, 0]]
+        else:
+            intersecção_limites += [[x_limite, y_limite, z_limite]]
     return intersecção_limites
 
 
@@ -185,15 +201,15 @@ def intersecção_foton_plano(intersecção_limites, x_plano, y_plano, z_plano):
     intersecção_plano_y = []
     intersecção_plano_z = []
     for i in range(len(intersecção_limites)):
-        if x_plano != 0 and round(intersecção_limites[i][0]) == x_plano:
+        if x_plano != np.e and round(intersecção_limites[i][0]) == x_plano:
             intersecção_plano_x += [intersecção_limites[i][0]]
             intersecção_plano_y += [intersecção_limites[i][1]]
             intersecção_plano_z += [intersecção_limites[i][2]]
-        elif y_plano != 0 and round(intersecção_limites[i][1]) == y_plano:
+        elif y_plano != np.e and round(intersecção_limites[i][1]) == y_plano:
             intersecção_plano_x += [intersecção_limites[i][0]]
             intersecção_plano_y += [intersecção_limites[i][1]]
             intersecção_plano_z += [intersecção_limites[i][2]]
-        elif z_plano != 0 and round(intersecção_limites[i][2]) == z_plano:
+        elif z_plano != np.e and round(intersecção_limites[i][2]) == z_plano:
             intersecção_plano_x += [intersecção_limites[i][0]]
             intersecção_plano_y += [intersecção_limites[i][1]]
             intersecção_plano_z += [intersecção_limites[i][2]]
