@@ -214,3 +214,4 @@ def intersecção_foton_plano(intersecção_limites, x_plano, y_plano, z_plano):
             intersecção_plano_y += [intersecção_limites[i][1]]
             intersecção_plano_z += [intersecção_limites[i][2]]
     return intersecção_plano_x, intersecção_plano_y, intersecção_plano_z
+
