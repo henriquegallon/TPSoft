@@ -2,7 +2,7 @@ from TPSoft import TPSoft
 import numpy as np
 import matplotlib.pyplot as plt
 
-TPC = TPSoft.TPC(100, 1000, 1000)
+TPC = TPSoft.TPC(1000, 1000, 1000)
 Muon = TPSoft.Partícula(TPC.comprimento_x/2, 0, TPC.comprimento_z/2, np.pi/2, np.pi/2)
 fig = plt.figure('Coleção - Histograma')
 ax1 = fig.add_subplot(121, projection='3d')
