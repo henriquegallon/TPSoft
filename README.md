@@ -2,9 +2,7 @@
 
 A detecção de eventos raros de neutrinos e matéria escura é bastante desafiadora devido à reduzida seção de choque dessas partículas. Nestes casos, o uso de uma câmara de projeção temporal (TPC) é de extrema relevância na reconstrução de traços e calorimetria desses eventos. Este software dedica-se à simulação de sinais que permitem a identificação da interação de partículas em experimentos com câmaras de projeção temporal utilizando argônio líquido como meio (LArTPC). 
 
-# Release 1.0
-
-Em sua primeira versão, o software engloba uma série de ferramentas para a simulação dessas condições. Todas elas podem ser encontradas no pacote TPSoft que está incluído na raíz do diretório. Também estão incluídos no repositório alguns exemplos de simulações prontas para serem executadas.
+Para isto, o software divide as paredes da TPC em uma grade de bins. Para cada uma dessas sub-regiões, o ângulo sólido a partir de um determinado ponto na trajetória de uma partícula é determinado e uma quantidade específica de fótons é sorteada através dessas probabilidades. Ao iterar o procedimento pela totalidade de trajetória, obtemos a posição de todos os encontros com as placas da TPC e conseguimos simular a coleção como um todo.
 
 ### Arquitetura
 
@@ -19,18 +17,22 @@ A segunda classe é responsável pela construção, representação e configura�
 
 #### Métodos
 
-- construtor(comprimento_x, comprimento_y, comprimento_z): constroe uma TPC em forma de paralelepípedo com dimensões comprimento_x, comprimento_y e compriemento_z.
-- plotar(eixo): representa a TPC em um sistema de coordenadas cartesiano. A origem do paralelepípedo sempre coincide com a origem do sistema. 
-- coleção_de_luz(Partícula, delta, eixo, plano_de_coleção, tipo): plota a coleção de luz de um objeto Partícula em um determinado plano_de_coleção (por exemplo, x=0), representado por um sistema de eixos específico e um tipo específico (hist para histograma e scatter para um conjunto de pontos). O delta escolhido representa o intervalo no espaço entre as emissões de luz na trajetória da Partícula.
+- construtor(resolução, **kwargs): define uma TPC em diversas geometrias. Até o momento, a geometria _paralel_ é a única implmentada. A sua construção depende de um parâmetro resolução, que indica a quantidade de bins que suas paredes serão divididas para a simulação de coleção, e os parâmetros de dimensão comprimento_x, comprimento_y e comprimento_z.
+- plotar(eixo): representa a TPC em um sistema de coordenadas cartesiano.
+- coleção_de_luz(Partícula, delta, eixo, **kwargs): plota a coleção de luz de um objeto Partícula em um determinado plano_de_coleção (por exemplo, x=0), representado por um sistema de eixos específico e um tipo específico (hist para histograma e scatter para um conjunto de pontos). O delta escolhido representa o intervalo no espaço entre as emissões de luz na trajetória da Partícula.
 
 Outros métodos também fazem parte do código. Estes, por sua vez, fogem do intuíto desse documento e, portanto, não serão discutidos.
 
-### Bugs
 
-Durante o desenvolvimento, me deparei com algumas situações em que a coleção de luz simulada não encaixava com o esperado teoricamente. Ao simular a detecção para um feixe paralelo à base na direção y, o padrão resultante para um plano z constante e x constante resultaram diferente. Um com um feixe bastante definido e outro com uma distribuição crescente no sentido do centro da placa.
-Esse problema está exemplificado no exemplo muon_crossing_x_y_z e fico aberto para qualquer sugestão.
+# Release 2.0 
 
-Qualquer outra dúvida sobre o software, não deixem de me procurar.
+A segunda versão do software engloba uma série de novas melhorias. Anteriormente, o sorteio utilizava uma outra metodologia que acabou se mostrando pouco favorável. Buscando ultrapassá-la, o uso de ângulos sólidos e um grid de probabilidades foi implementado e resultados mais concisos foram observados.
+
+Além disso, a expansibilidade de geometrias para a classe TPC também foi implementada. Agora, novas geometrias podem ser desenvolvidas sem a necessidade de alteração do código base. 
+
+# Contato
+
+Se surgirem quaisquer dúvidas à respeito do software, não hesitem em entrar em contato.
 
 Autor: Henrique Gallon Gadioli.
 
